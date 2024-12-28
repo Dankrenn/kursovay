@@ -4,6 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 
+//Структура моноблоки
 typedef struct Monoblocks {
     char fabricator[10];
     char OS[10];
@@ -12,6 +13,7 @@ typedef struct Monoblocks {
     float screenDiagonal;
 } monoblock_t;
 
+//Функция добавление структур в массив через клавиатуру
 monoblock_t* fill_monoblocks(monoblock_t* monoblocks, int size) {
     for (int i = 0; i < size; i++) {
         printf("Производитель моноблока: ");
@@ -38,6 +40,7 @@ monoblock_t* fill_monoblocks(monoblock_t* monoblocks, int size) {
     return monoblocks;
 }
 
+//Функция вывода записи в консоль
 void print_monoblock(monoblock_t monoblocks) {
     printf("Производитель моноблока: %s\n", monoblocks.fabricator);
     printf("Операционная система: %s\n", monoblocks.OS);
@@ -47,6 +50,7 @@ void print_monoblock(monoblock_t monoblocks) {
     printf("\n");
 }
 
+//Функция поиска записей по операционной системе и объему оперативной памяти
 int* search_monoblock(monoblock_t* monoblocks, int SIZE, char* OS, int RAM) {
     int* countOfSeeked = malloc(SIZE * sizeof(int));
     for (int i = 0; i < SIZE; i++) {
@@ -70,18 +74,32 @@ int* search_monoblock(monoblock_t* monoblocks, int SIZE, char* OS, int RAM) {
     return countOfSeeked;
 }
 
+//Вспомогательная функция для сортировки по производителю
 int compare_fabricator(const void* a, const void* b) {
     const monoblock_t* monoblock1 = (const monoblock_t*)a;
     const monoblock_t* monoblocks2 = (const monoblock_t*)b;
     return strcmp(monoblock1->fabricator, monoblocks2->fabricator);
 }
 
+//Вспомогательная функция для сортировки по процессору
 int compare_CPU(const void* a, const void* b) {
     const monoblock_t* monoblock1 = (const monoblock_t*)a;
     const monoblock_t* monoblock2 = (const monoblock_t*)b;
     return strcmp(monoblock1->CPU, monoblock2->CPU);
 }
 
+//Вспомогательная функция для сортировки по производителю и процессу
+int compare_fabricator_and_OS(const void* a, const void* b) {
+    const monoblock_t* monoblock1 = (const monoblock_t*)a;
+    const monoblock_t* monoblock2 = (const monoblock_t*)b;
+    int fabricator_cmp = strcmp(monoblock1->fabricator, monoblock2->fabricator);
+    if (fabricator_cmp == 0) {
+        return strcmp(monoblock1->CPU, monoblock2->CPU);
+    }
+    return fabricator_cmp;
+}
+
+//Функция сортировки
 monoblock_t* sort_monoblocks(monoblock_t* monoblocks, int size, int criteria) {
     if (criteria == 1) {
         qsort(monoblocks, size, sizeof(monoblock_t), compare_fabricator);
@@ -90,8 +108,7 @@ monoblock_t* sort_monoblocks(monoblock_t* monoblocks, int size, int criteria) {
         qsort(monoblocks, size, sizeof(monoblock_t), compare_CPU);
     }
     else if (criteria == 3) {
-        qsort(monoblocks, size, sizeof(monoblock_t), compare_fabricator);
-        qsort(monoblocks, size, sizeof(monoblock_t), compare_CPU);
+        qsort(monoblocks, size, sizeof(monoblock_t), compare_fabricator_and_OS);
     }
     else {
         printf("Ошибка: Неверный критерий сортировки\n");
@@ -99,6 +116,7 @@ monoblock_t* sort_monoblocks(monoblock_t* monoblocks, int size, int criteria) {
     return monoblocks;
 }
 
+//Функция для записи данных в файл
 char* WriteFile(monoblock_t* monoblocks, int size) {
     FILE* fp = fopen("Coursework.txt", "w");
     if (fp == NULL) {
@@ -120,6 +138,7 @@ char* WriteFile(monoblock_t* monoblocks, int size) {
     return NULL;
 }
 
+//Функция для чтения данных из файла 
 char* ReadFile(monoblock_t* monoblocks, int size) {
     FILE* fp = fopen("Coursework.txt", "r");
     if (fp == NULL) {
@@ -143,6 +162,7 @@ char* ReadFile(monoblock_t* monoblocks, int size) {
     return NULL;
 }
 
+//Функция для добавления и обновления записи
 monoblock_t* AddChangeNotes(monoblock_t* monoblocks, int num) {
     printf("Производитель моноблока: ");
     scanf("%9s", monoblocks[num].fabricator);
@@ -167,6 +187,7 @@ monoblock_t* AddChangeNotes(monoblock_t* monoblocks, int num) {
     return monoblocks;
 }
 
+//Функция для удаления записи 
 monoblock_t* DeleteNotes(monoblock_t* monoblocks, int num, int SIZE)
 {
     int n = num - 1;
@@ -190,6 +211,7 @@ monoblock_t* DeleteNotes(monoblock_t* monoblocks, int num, int SIZE)
     }
     return monoblocks;
 }
+
 
 void main() {
     setlocale(LC_ALL, "Rus");
@@ -274,6 +296,7 @@ void main() {
                 if (countOfSeeked[i] != -1) print_monoblock(monoblocks[i]);
             }
             break;
+
         case 3:
             num = 0;
             printf("**********************************************\n");
@@ -373,6 +396,8 @@ void main() {
                 break;
             case 5:
                 break;
+            default:
+                printf("Неверный выбор. Попробуйте снова.\n");
             }
             break;
         case 4:
@@ -402,6 +427,8 @@ void main() {
                 break;
             case 4:
                 break;
+            default:
+                printf("Неверный выбор. Попробуйте снова.\n");
             }
 
             break;
